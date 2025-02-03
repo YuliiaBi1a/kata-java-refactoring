@@ -2,10 +2,10 @@ package dev.vir.tennisgame;
 
 public class TennisGame {
 
-    private int m_score1 = 0;
-    private int m_score2 = 0;
-    private String player1Name;
-    private String player2Name;
+    private int score1 = 0;
+    private int score2 = 0;
+    private final String player1Name;
+    private final String player2Name;
 
     public TennisGame(String player1Name, String player2Name) {
         this.player1Name = player1Name;
@@ -13,62 +13,50 @@ public class TennisGame {
     }
 
     public void wonPoint(String playerName) {
-        if (playerName.equals(this.player1Name)) {
-            m_score1 += 1;
+        if (playerName.equals(player1Name)) {
+            score1++;
         } else {
-            m_score2 += 1;
+            score2++;
         }
     }
 
     public String getScore() {
-        String score = "";
-        int tempScore = 0;
-        if (m_score1 == m_score2) {
-            if (m_score1 >= 3) {
-                score = "Deuce";
-            } else {
-                switch (m_score1) {
-                    case 0:
-                        score = "Love-All";
-                        break;
-                    case 1:
-                        score = "Fifteen-All";
-                        break;
-                    case 2:
-                        score = "Thirty-All";
-                        break;
-                }
-            }
-        } else if (m_score1 >= 4 || m_score2 >= 4) {
-            int minusResult = m_score1 - m_score2;
-            if (minusResult == 1) score = "Advantage " + player1Name;
-            else if (minusResult == -1) score = "Advantage " + player2Name;
-            else if (minusResult >= 2) score = "Win for " + player1Name;
-            else score = "Win for " + player2Name;
+        if (score1 == score2) {
+            return getEqualScore();
+        } else if (score1 >= 4 || score2 >= 4) {
+            return getAdvantageOrWin();
         } else {
-            for (int i = 1; i < 3; i++) {
-                if (i == 1) tempScore = m_score1;
-                else {
-                    score += "-";
-                    tempScore = m_score2;
-                }
-                switch (tempScore) {
-                    case 0:
-                        score += "Love";
-                        break;
-                    case 1:
-                        score += "Fifteen";
-                        break;
-                    case 2:
-                        score += "Thirty";
-                        break;
-                    case 3:
-                        score += "Forty";
-                        break;
-                }
-            }
+            return getRegularScore();
         }
-        return score;
     }
 
+    private String getEqualScore() {
+        return switch (score1) {
+            case 0 -> "Love-All";
+            case 1 -> "Fifteen-All";
+            case 2 -> "Thirty-All";
+            default -> "Deuce";
+        };
+    }
+
+    private String getAdvantageOrWin() {
+        int scoreDifference = score1 - score2;
+        if (scoreDifference == 1) return "Advantage " + player1Name;
+        if (scoreDifference == -1) return "Advantage " + player2Name;
+        return scoreDifference >= 2 ? "Win for " + player1Name : "Win for " + player2Name;
+    }
+
+    private String getRegularScore() {
+        return getScoreString(score1) + "-" + getScoreString(score2);
+    }
+
+    private String getScoreString(int score) {
+        return switch (score) {
+            case 0 -> "Love";
+            case 1 -> "Fifteen";
+            case 2 -> "Thirty";
+            case 3 -> "Forty";
+            default -> "";
+        };
+    }
 }

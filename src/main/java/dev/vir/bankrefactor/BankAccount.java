@@ -5,8 +5,9 @@ import java.util.Date;
 import java.util.List;
 
 public class BankAccount {
+
     private double balance;
-    private List<String> transactions;
+    private final List<Transaction> transactions;
 
     public BankAccount() {
         this.balance = 0.0;
@@ -14,24 +15,30 @@ public class BankAccount {
     }
 
     public void deposit(double amount) {
-        if (amount > 0) {
-            balance += amount;
-            transactions.add(new Date() + " - Deposit: " + amount);
+        if (amount <= 0) {
+            throw new IllegalArgumentException("El monto del depósito debe ser positivo.");
         }
+        balance += amount;
+        transactions.add(new Transaction("Deposit", amount));
     }
 
     public void withdraw(double amount) {
-        if (amount > 0 && amount <= balance) {
-            balance -= amount;
-            transactions.add(new Date() + " - Withdraw: " + amount);
+        if (amount <= 0) {
+            throw new IllegalArgumentException("El monto del retiro debe ser positivo.");
         }
+        if (amount > balance) {
+            throw new IllegalArgumentException("Fondos insuficientes.");
+        }
+        balance -= amount;
+        transactions.add(new Transaction("Withdraw", amount));
     }
 
     public double getBalance() {
         return balance;
     }
 
-    public List<String> getTransactionHistory() {
-        return transactions;
+    public List<Transaction> getTransactionHistory() {
+        return new ArrayList<>(transactions);
     }
 }
+
